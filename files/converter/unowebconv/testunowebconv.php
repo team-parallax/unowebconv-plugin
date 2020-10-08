@@ -50,8 +50,8 @@ $response = converter::test_unoconv_path();
 //     $converter->serve_test_document();
 //     die();
 // }
-
-$msg = $OUTPUT->get_string('pluginname', 'fileconverter_unowebconv') . 'path: ' . $CFG->pathtounoconvws;
+$path = get_config('fileconverter_unowebconv', 'pathtounoconvws');
+$msg = $OUTPUT->get_string('pluginname', 'fileconverter_unowebconv') . 'path: ' . $path;
 if ($response->status === converter::UNOCONVWSPATH_OK) {
     $unoresponse = $OUTPUT->notification(get_string('test_unoconvwsok', 'fileconverter_unowebconv'), 'success');
 }

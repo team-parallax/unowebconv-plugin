@@ -287,7 +287,6 @@ class converter implements \core_files\converter_interface {
      */
     public static function test_unoconv_path() {
         $unoconvwspath = self::get_unoconv_webservice_url();
-        echo $unoconvwspath;
         $ret = new \stdClass();
         $ret->status = self::UNOCONVWSPATH_OK;
         $ret->message = null;
@@ -297,7 +296,6 @@ class converter implements \core_files\converter_interface {
             return $ret;
         }
         $ping_response = curl_handler::get_http_response_code($unoconvwspath . "formats/");
-        echo $ping_response;
         if ($ping_response !== 200) {
             if ($ping_response === 400 || $ping_response === 404) {
                 $ret->status = self::UNOCONVWSPATH_NOT_FOUND_ERROR;
@@ -307,7 +305,7 @@ class converter implements \core_files\converter_interface {
             // $ret->status = self::UNOCONVWSPATH_ERROR;
             // $ret->message = self::UNOCONVWSPATH_ERROR_MSG;
         }
-        self::$formats = self::get_supported_conversions();
+        self::$formats = (new converter)->get_supported_conversions();
         return $ret;
     }
 
