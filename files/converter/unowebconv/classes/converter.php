@@ -286,8 +286,7 @@ class converter implements \core_files\converter_interface {
      * @return  \stdClass
      */
     public static function test_unoconv_path() {
-        global $CFG;
-        $unoconvwspath = $CFG->pathtounoconvws;
+        $unoconvwspath = self::get_unoconv_webservice_url();
         echo $unoconvwspath;
         $ret = new \stdClass();
         $ret->status = self::UNOCONVWSPATH_OK;
@@ -332,7 +331,7 @@ class converter implements \core_files\converter_interface {
     protected static function is_format_supported($format) {
         $formats = (new converter)->get_supported_conversions();
         // To-Do: filter if conversion format is in list
-       return $formats;
+        return $formats;
     }
 
     /**
@@ -341,13 +340,21 @@ class converter implements \core_files\converter_interface {
      * @return  array
      */
     public function get_supported_conversions() {
-        global $CFG;
-        $base_url = $CFG->pathtounoconvws;
+        $base_url = self::get_unoconv_webservice_url();
         $response_data = curl_handler::fetch_url_data($base_url . 'formats');
         $response = array();
         foreach ($response_data as $key => $value) {
             $response = array_merge($response, $value);
         }
         return $response;
+    }
+
+    /**
+     * Get Unowebconv url from settings
+     *
+     * @return string
+     */
+    private static function get_unoconv_webservice_url() {
+        return get_config('fileconverter_unowebconv', 'pathtounoconvws');
     }
 }
