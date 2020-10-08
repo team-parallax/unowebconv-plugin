@@ -41,7 +41,7 @@ class curl_handler
         curl_setopt($ch, CURLOPT_HEADER, true);    // get headers
         curl_setopt($ch, CURLOPT_NOBODY, true);    // no body
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($url);
+        curl_exec($ch);
         $err = curl_errno($ch);
         if ($err) {   // should be 0
             curl_close($ch);
