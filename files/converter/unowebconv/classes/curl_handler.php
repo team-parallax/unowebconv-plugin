@@ -28,6 +28,31 @@ class curl_handler
         return json_decode($result);
     }
 
+    public static function post_conversion($url, $data)
+    {
+        if (!$url || !is_string($url)) {
+            return false;
+        }
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return false;
+        }
+        $ch = (new curl_handler)->configure_curl_session($ch);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $response = curl_exec($ch);
+        $err = curl_errno($ch);
+        if ($err) {
+            curl_close($ch);
+            return false;
+        }
+        curl_close($ch);
+        $result = utf8_encode($response);
+        return json_decode($result);
+    }
+
     public static function get_http_response_code($url)
     {
         if (!$url || !is_string($url)) {
@@ -53,7 +78,8 @@ class curl_handler
         return $code;
     }
 
-    function configure_curl_session($curl_handler, $follow_redirects = true)
+
+    private static function configure_curl_session($curl_handler, $follow_redirects = true)
     {
         if ($follow_redirects) {
             curl_setopt($curl_handler, CURLOPT_FOLLOWLOCATION, true);

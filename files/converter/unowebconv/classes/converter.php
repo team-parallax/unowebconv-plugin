@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/filelib.php');
 
+use cache;
 use stored_file;
 use \core_files\conversion;
 use \fileconverter_unowebconv\curl_handler as curl_handler;
@@ -43,7 +44,6 @@ class converter implements \core_files\converter_interface {
     /** Test file missing */
     const UNOCONVWSPATH_NOTESTFILE = 'notestfile';
 
-// const UNOCONVPATH_ERROR = 'error';
     /** Webservice could not be reached with given path. */
     const UNOCONVWSPATH_NOT_FOUND_ERROR = "notfound";
     const UNOCONVWSPATH_NOT_FOUND_ERROR_MSG = "Path error: webservice not found";
@@ -56,12 +56,7 @@ class converter implements \core_files\converter_interface {
     /**
      * @var bool $requirementsmet Whether requirements have been met.
      */
-    protected static $requirementsmet = false;
-
-    /**
-     * @var array $formats The list of formats supported by unoconv.
-     */
-    protected static $formats;
+    protected static $requirementsmet = null;
 
     /**
      * Convert a document to a new format and return a conversion object relating to the conversion in progress.
@@ -70,7 +65,7 @@ class converter implements \core_files\converter_interface {
      * @return  $this
      */
     public function start_document_conversion(\core_files\conversion $conversion) {
-        global $CFG;
+        self::log("start_document_conversion: ");
 
         if (!self::are_requirements_met()) {
             $conversion->set('status', conversion::STATUS_FAILED);
@@ -124,59 +119,35 @@ class converter implements \core_files\converter_interface {
             throw $fe;
         }
 
-        // The temporary file to copy into.
-        $newtmpfile = pathinfo($filename, PATHINFO_FILENAME) . '.' . $format;
-        $newtmpfile = $uniqdir . '/' . clean_param($newtmpfile, PARAM_FILE);
+        $byte_array = array_values(unpack('C*', $file->get_content()));
 
-        $cmd = escapeshellcmd(trim($CFG->pathtounoconv)) . ' ' .
-               escapeshellarg('-f') . ' ' .
-               escapeshellarg($format) . ' ' .
-               escapeshellarg('-o') . ' ' .
-               escapeshellarg($newtmpfile) . ' ' .
-               escapeshellarg($filename);
-
-        $output = null;
-        $currentdir = getcwd();
-        chdir($uniqdir);
-        $result = exec($cmd, $output, $returncode);
-        chdir($currentdir);
-        touch($newtmpfile);
-
-        if ($returncode != 0) {
-            $conversion->set('status', conversion::STATUS_FAILED);
-            error_log(
-                "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
-                "was unsuccessful; returned with exit status code (" . $returncode . "). Please check the unoconv " .
-                "configuration and conversion file content / format."
-            );
+        $unoconvwspath = self::get_unoconv_webservice_url();
+        $arr = [
+            "file" => [
+                "type" => "Buffer",
+                "data" => $byte_array
+            ],
+            "filename" => "assignment1",
+            "originalFormat" => "docx",
+            "targetFormat" => "pdf"
+        ];
+        $response = curl_handler::post_conversion($unoconvwspath . "conversion", $arr);
+        if(isset($response->status) && isset($response->name) && isset($response->message) && $response->status !== 200) {
+            error_log( $response->name . ": " .  $response->message);
             return $this;
         }
-
-        if (!file_exists($newtmpfile)) {
-            $conversion->set('status', conversion::STATUS_FAILED);
-            error_log(
-                "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
-                "was unsuccessful; the output file was not found in '" . $newtmpfile . "'. Please check the disk " .
-                "permissions."
-            );
+        if(empty($response->conversionId)) {
+            error_log( "Unknown Error");
             return $this;
         }
-
-        if (filesize($newtmpfile) === 0) {
-            $conversion->set('status', conversion::STATUS_FAILED);
-            error_log(
-                "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
-                "was unsuccessful; the output file size has 0 bytes in '" . $newtmpfile . "'. Please check the " .
-                "conversion file content / format with the command: [ " . $cmd . " ]"
-            );
-            return $this;
-        }
-
+        $conversionId = $response->conversionId;
+        self::log('$conversionId: ' . $conversionId);
         $conversion
-            ->store_destfile_from_path($newtmpfile)
-            ->set('status', conversion::STATUS_COMPLETE)
+            ->set('status', conversion::STATUS_IN_PROGRESS)
+            /* @TODO */
+            ->set('statusmessage', "In Progress")
+            ->set('data', $conversionId)
             ->update();
-
         return $this;
     }
 
@@ -184,19 +155,70 @@ class converter implements \core_files\converter_interface {
      * Poll an existing conversion for status update.
      *
      * @param   conversion $conversion The file to be converted
-     * @return  response $response The response object containing 
-     * a status and:
-     *  if status is 'in queue' contains its position in queue
-     *  if status is 'converted' contains the converted file
+     * @return  $this
      */
     public function poll_conversion_status(conversion $conversion) {
+        self::log("poll_conversion_status");
         // Get current conversion status for given Id.
-        // Todo: find out if this is how conversion "looks"
-        $response = curl_handler::fetch_url_data($conversion->id);
-        $status = $response["status"];
-        $status = self::get_conversion_status($status);
-        $conversion->set('status', $status);
-        return $response;
+        $conversionId = $conversion->get("data");
+        $base_url = self::get_unoconv_webservice_url();
+        $response = curl_handler::fetch_url_data($base_url . "conversion/" . $conversionId);
+        self::log($response->status);
+        $status = self::get_conversion_status($response->status);
+        if($status === conversion::STATUS_COMPLETE) {
+            // Create unique directory
+            $uniqdir = make_unique_writable_directory(make_temp_directory('core_file/conversions'));
+            \core_shutdown_manager::register_function('remove_dir', array($uniqdir));
+
+            // The temporary file to copy into.
+            $file = $conversion->get_sourcefile();
+            $format = $conversion->get('targetformat');
+            $localfilename = $file->get_id() . '.' . $format;
+            $newtmpfile = $uniqdir . '/' . $localfilename;
+
+            // Copy
+            $buffer = $response->resultFile->data;
+            $str = pack('C*', ...$buffer);
+            file_put_contents($newtmpfile, $str);
+
+            if (!file_exists($newtmpfile)) {
+                $conversion->set('status', conversion::STATUS_FAILED);
+                error_log(
+                    "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
+                    "was unsuccessful; the output file was not found in '" . $newtmpfile . "'. Please check the disk " .
+                    "permissions."
+                );
+                return $this;
+            }
+
+            if (filesize($newtmpfile) === 0) {
+                $conversion->set('status', conversion::STATUS_FAILED);
+                error_log(
+                    "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
+                    "was unsuccessful; the output file size has 0 bytes in '" . $newtmpfile . "'. Please check the " .
+                    "conversion file content / format with the command: [ " . $cmd . " ]"
+                );
+                return $this;
+            }
+
+            self::log($newtmpfile);
+
+            $conversion
+                ->store_destfile_from_path($newtmpfile)
+                ->set('status', $status)
+                ->update();
+        }
+        else if($status === conversion::STATUS_FAILED) {
+            /* TODO try again? */
+            $conversion
+                ->set('status', $status);
+        }
+        else if($status === conversion::STATUS_IN_PROGRESS) {
+            $conversion
+                ->set('status', $status)
+                ->update();
+        }
+        return $this;
     }
 
     protected static function get_conversion_status(string $status) {
@@ -207,63 +229,11 @@ class converter implements \core_files\converter_interface {
                 return \core_files\conversion::STATUS_PENDING;
             case 'processing':
                 return \core_files\conversion::STATUS_IN_PROGRESS;
+            default:
+                return \core_files\conversion::STATUS_FAILED;
         }
     }
 
-    /**
-     * Generate and serve the test document.
-     *
-     * @return  void
-     */
-    public function serve_test_document() {
-        // Todo: rework/refactor
-        global $CFG;
-        require_once($CFG->libdir . '/filelib.php');
-
-        $format = 'pdf';
-
-        $filerecord = [
-            'contextid' => \context_system::instance()->id,
-            'component' => 'test',
-            'filearea' => 'fileconverter_unowebconv',
-            'itemid' => 0,
-            'filepath' => '/',
-            'filename' => 'unoconv_test.docx'
-        ];
-
-        // Get the fixture doc file content and generate and stored_file object.
-        $fs = get_file_storage();
-        $testdocx = $fs->get_file($filerecord['contextid'], $filerecord['component'], $filerecord['filearea'],
-                $filerecord['itemid'], $filerecord['filepath'], $filerecord['filename']);
-
-        if (!$testdocx) {
-            $fixturefile = dirname(__DIR__) . '/tests/fixtures/unoconv-source.docx';
-            $testdocx = $fs->create_file_from_pathname($filerecord, $fixturefile);
-        }
-
-        $conversions = conversion::get_conversions_for_file($testdocx, $format);
-        foreach ($conversions as $conversion) {
-            if ($conversion->get('id')) {
-                $conversion->delete();
-            }
-        }
-
-        $conversion = new conversion(0, (object) [
-                'sourcefileid' => $testdocx->get_id(),
-                'targetformat' => $format,
-            ]);
-        $conversion->create();
-
-        // Convert the doc file to the target format and send it direct to the browser.
-        $this->start_document_conversion($conversion);
-        do {
-            sleep(1);
-            $this->poll_conversion_status($conversion);
-            $status = $conversion->get('status');
-        } while ($status !== conversion::STATUS_COMPLETE && $status !== conversion::STATUS_FAILED);
-
-        readfile_accel($conversion->get_destfile(), 'application/pdf', true);
-    }
 
     /**
      * Whether the plugin is configured and requirements are met.
@@ -271,12 +241,11 @@ class converter implements \core_files\converter_interface {
      * @return  bool
      */
     public static function are_requirements_met() {
-        // Todo: rework/refactor
+        self::log("are_requirements_met");
         if (self::$requirementsmet === null) {
             $requirementsmet = self::test_unoconv_path()->status === self::UNOCONVWSPATH_OK;
             self::$requirementsmet = $requirementsmet;
         }
-
         return self::$requirementsmet;
     }
 
@@ -286,6 +255,7 @@ class converter implements \core_files\converter_interface {
      * @return  \stdClass
      */
     public static function test_unoconv_path() {
+        self::log("test_unoconv_path");
         $unoconvwspath = self::get_unoconv_webservice_url();
         $ret = new \stdClass();
         $ret->status = self::UNOCONVWSPATH_OK;
@@ -305,7 +275,6 @@ class converter implements \core_files\converter_interface {
             // $ret->status = self::UNOCONVWSPATH_ERROR;
             // $ret->message = self::UNOCONVWSPATH_ERROR_MSG;
         }
-        self::$formats = (new converter)->get_supported_conversions();
         return $ret;
     }
 
@@ -327,24 +296,39 @@ class converter implements \core_files\converter_interface {
      * @return  bool
      */
     protected static function is_format_supported($format) {
-        $formats = (new converter)->get_supported_conversions();
-        // To-Do: filter if conversion format is in list
-        return $formats;
+        $formatObjects = (new converter)->fetch_unoconv_supported_conversions();
+        foreach ($formatObjects as $key => $value) {
+            $extension = $value->extension;
+            if ($extension === $format) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * Fetch the list of supported file formats.
+     * Only for displaying in admin panel
      *
-     * @return  array
+     * @return  string
      */
     public function get_supported_conversions() {
-        $base_url = self::get_unoconv_webservice_url();
-        $response_data = curl_handler::fetch_url_data($base_url . 'formats');
-        $response = array();
-        foreach ($response_data as $key => $value) {
-            $response = array_merge($response, $value);
+        $formatObjects = $this->fetch_unoconv_supported_conversions();
+        $extensions = [];
+        foreach ($formatObjects as $key => $value) {
+            $extensions []= $value->extension;
         }
-        return $response;
+        return implode(', ', $extensions);
+    }
+
+    private function fetch_unoconv_supported_conversions() {
+        $base_url = self::get_unoconv_webservice_url();
+        $cache = cache::make('fileconverter_unowebconv', 'formats');
+        if(!$cache->get('formats')) {
+            $response_object = curl_handler::fetch_url_data($base_url . 'formats');
+            $cache->set('formats', $response_object->document);
+        }
+        return $cache->get('formats');
     }
 
     /**
@@ -354,5 +338,10 @@ class converter implements \core_files\converter_interface {
      */
     private static function get_unoconv_webservice_url() {
         return get_config('fileconverter_unowebconv', 'pathtounoconvws');
+    }
+
+    private static function log($msg) {
+        $log = gmdate('H:i:s', time()) . ":  " . var_export($msg,true);
+        file_put_contents("/tmp/log.txt", $log.PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 }
