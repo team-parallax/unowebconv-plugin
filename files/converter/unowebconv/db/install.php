@@ -24,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_fileconverter_unoconv_install() {
+function xmldb_fileconverter_unowebconv_install() {
     global $CFG;
 
     $unoconvpresent = !empty($CFG->pathtounoconvws);
