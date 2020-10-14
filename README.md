@@ -1,12 +1,13 @@
 # Moodle unowebconv plugin
 
-This Repository contains the code for the unowebconv plugin, an alternative to the unoconv moodle plugin, that uses a webservice for the document conversions.
+This Repository contains the code for the `unowebconv` plugin, an alternative to the unoconv moodle plugin, that uses a webservice for the document conversions.
 
 ## How to use
 
 To install this plugin in moodle there are two ways:
 
 1. Install the plugin from zip (recommended)
+   _Important:_ only create a zip from the unowebconv folder (e.g. `unowebconv.zip`)
 
 2. Copy the folder `unowebconv` and its contents to `files/converter/` within the moodle installation and run a database upgrade.
 
