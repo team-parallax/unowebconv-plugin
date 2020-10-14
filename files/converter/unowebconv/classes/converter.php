@@ -127,9 +127,9 @@ class converter implements \core_files\converter_interface {
                 "type" => "Buffer",
                 "data" => $byte_array
             ],
-            "filename" => "assignment1",
-            "originalFormat" => "docx",
-            "targetFormat" => "pdf"
+            "filename" => $file->get_filename(),
+            "originalFormat" => $fromformat,
+            "targetFormat" => $format
         ];
         $response = curl_handler::post_conversion($unoconvwspath . "conversion", $arr);
         if(isset($response->status) && isset($response->name) && isset($response->message) && $response->status !== 200) {

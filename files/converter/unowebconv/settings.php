@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings for unoconv.
+ * Settings for unowebconv.
  *
  * @package   fileconverter_unowebconv
- * @copyright 2017 Andrew Nicols <andrew@nicols.co.uk>
+ * @copyright 2020 Sven Patrick Meier <sven.patrick.meier@team-parallax.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

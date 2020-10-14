@@ -44,12 +44,6 @@ $PAGE->set_title($strheading);
 $converter = new converter();
 
 $response = converter::test_unoconv_path();
-// if ($sendpdf) {
-//     require_sesskey();
-
-//     $converter->serve_test_document();
-//     die();
-// }
 $path = get_config('fileconverter_unowebconv', 'pathtounoconvws');
 $msg = $OUTPUT->get_string('pluginname', 'fileconverter_unowebconv') . 'path: ' . $path;
 if ($response->status === converter::UNOCONVWSPATH_OK) {
@@ -60,19 +54,6 @@ else {
     $unoresponse = $OUTPUT->notification($response, 'warning');
 }
 
-// $result = \fileconverter_unowebconv\converter::test_unoconv_path();
-// switch ($result->status) {
-//     case \fileconverter_unowebconv\converter::UNOCONVWSPATH_OK:
-//         $msg = $OUTPUT->notification(get_string('test_unoconvok', 'fileconverter_unoconv'), 'success');
-//         $pdflink = new moodle_url($PAGE->url, array('sendpdf' => 1, 'sesskey' => sesskey()));
-//         $msg .= html_writer::link($pdflink, get_string('test_unoconvdownload', 'fileconverter_unoconv'));
-//         $msg .= html_writer::empty_tag('br');
-//         break;
-
-//     default:
-//         $msg = $OUTPUT->notification(get_string("test_unoconv{$result->status}", 'fileconverter_unoconv'), 'warning');
-//         break;
-// }
 $returl = new moodle_url('/admin/settings.php', array('section' => 'fileconverterunowebconv'));
 $msg .= $OUTPUT->continue_button($returl);
 echo $OUTPUT->header();

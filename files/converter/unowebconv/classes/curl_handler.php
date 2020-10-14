@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Class for curl handling.
+ *
+ * @package    fileconverter_unowebconv
+ * @copyright  2020 Sven Patrick Meier <sven.patrick.meier@team-parallax.com>
+ */
 namespace fileconverter_unowebconv;
 
 
