@@ -12,3 +12,9 @@ To install this plugin in moodle there are two ways:
 2. Copy the folder `unowebconv` and its contents to `files/converter/` within the moodle installation and run a database upgrade.
 
 After the plugin was installed sucessfully, do not forget to provide a path pointing to the corresponding webservice, after that the plugin is enabled and ready to use.
+
+## Compatibility
+
+All versions currently mentioned in this document specify versions of the plugin itself or versions of the [team-parallax/unoconv-webservice](https://github.com/team-parallax/unoconv-webservice) (referred to as unoconv-webservice)
+
+The current version of this plugin (v1.0.0) works with version `0.4.2` of the unoconv-webservice 
