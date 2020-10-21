@@ -24,17 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pathtounoconvws'] = 'Path to unoconv document converter webservice';
-$string['pathtounoconvws_help'] = 'Path to unoconv document converter webservice. This is a webservice that is capable of converting between document formats supported by LibreOffice. This is used to support a wider range of input files for the assignment annotate PDF feature.';
+$string['pathtounoconvws'] = 'Url to unoconv document converter webservice';
+$string['pathtounoconvws_help'] = 'Url to unoconv document converter webservice. This is a webservice that is capable of converting between document formats supported by LibreOffice. This is used to support a wider range of input files for the assignment annotate PDF feature.';
 $string['pluginname'] = 'Unowebconv';
 $string['privacy:metadata'] = 'The Unoconv document converter plugin does not store any personal data.';
-$string['test_unoconvws'] = 'Test unoconv webservice path';
+$string['test_unoconvws'] = 'Test unoconv webservice url';
 $string['test_unoconvwserror'] = 'The webservice seems to have troubles responding. Review your settings.';
 $string['test_unoconvwsdoesnotexist'] = 'The provided url does not point to the unoconv-webservice. Please review your path settings.';
-// $string['test_unoconvdownload'] = 'Download the converted pdf test file.';
-$string['test_unoconvwsempty'] = 'The unoconv path is not set. Please review your path settings.';
-// $string['test_unoconvisdir'] = 'The unoconv path points to a folder, please include the unoconv program in the path you specify';
+$string['test_unoconvwsempty'] = 'The unoconv url is not set. Please review your path settings.';
 $string['test_unoconvwsnotestfile'] = 'The test document to be converted to PDF is missing.';
-// $string['test_unoconvnotexecutable'] = 'The unoconv path points to a file that is not executable';
-$string['test_unoconvwsok'] = 'The unoconv webservice path appears to be properly configured.';
-// $string['test_unoconvversionnotsupported'] = 'The version of unoconv you have installed is not supported.';
+$string['test_unoconvwsok'] = 'The unoconv webservice url appears to be properly configured.';

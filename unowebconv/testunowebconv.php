@@ -50,7 +50,6 @@ if ($response->status === converter::UNOCONVWSPATH_OK) {
     $unoresponse = $OUTPUT->notification(get_string('test_unoconvwsok', 'fileconverter_unowebconv'), 'success');
 }
 else {
-    
     $unoresponse = $OUTPUT->notification($response, 'warning');
 }
 

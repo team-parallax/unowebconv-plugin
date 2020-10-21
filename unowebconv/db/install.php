@@ -25,14 +25,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 function xmldb_fileconverter_unowebconv_install() {
-    global $CFG;
-
-    $unoconvpresent = !empty($CFG->pathtounoconvws);
-    // Todo: implement check for webservice availability
-    // $unoconvpresent = $unoconvpresent && file_exists($CFG->pathtounoconv);
-    if ($unoconvpresent) {
-        // Unowebconv is configured correctly, enable it.
-        $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
-        $plugins['unowebconv']->set_enabled(true);
+    
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
+    // Unowebconv is configured correctly, enable it.
+    $plugins['unowebconv']->set_enabled(true);
+    // If unoconv plugin is available disable it.
+    if ($plugins['unoconv']) {
+        $plugins['unoconv']->set_enabled(false);
     }
 }

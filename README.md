@@ -15,6 +15,20 @@ After the plugin was installed sucessfully, do not forget to provide a path poin
 
 ## Compatibility
 
+The current version of this plugin (v1.0.1) works with version `0.4.2` of the unoconv-webservice (more information on versions below).
+
 All versions currently mentioned in this document specify versions of the plugin itself or versions of the [team-parallax/unoconv-webservice](https://github.com/team-parallax/unoconv-webservice) (referred to as unoconv-webservice)
 
-The current version of this plugin (v1.0.0) works with version `0.4.2` of the unoconv-webservice 
+
+| Plugin | Webservice |
+| --- | --- |
+| 1.0.0 | 0.4.2 |
+| 1.0.1 | 0.4.2 |
+
+## Changes
+
+Changes in different versions:
+
+__1.0.0__: release candidate
+
+__1.0.1__: updated labels for settings page, automatic disabling of unoconv
