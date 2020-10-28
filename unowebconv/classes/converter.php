@@ -323,9 +323,11 @@ class converter implements \core_files\converter_interface {
 
     private function fetch_unoconv_supported_conversions() {
         $base_url = self::get_unoconv_webservice_url();
+        self::log($base_url);
         $cache = cache::make('fileconverter_unowebconv', 'formats');
         if(!$cache->get('formats')) {
             $response_object = curl_handler::fetch_url_data($base_url . 'formats');
+            self::log($response_object);
             $cache->set('formats', $response_object->document);
         }
         return $cache->get('formats');
@@ -337,7 +339,11 @@ class converter implements \core_files\converter_interface {
      * @return string
      */
     private static function get_unoconv_webservice_url() {
-        return get_config('fileconverter_unowebconv', 'pathtounoconvws');
+        $unowebconv_url = get_config('fileconverter_unowebconv', 'pathtounoconvws');
+        if (substr($unowebconv_url, -1) !== '/') {
+            $unowebconv_url .= '/';
+        }
+        return $unowebconv_url;
     }
 
     private static function log($msg) {

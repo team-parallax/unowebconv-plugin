@@ -30,16 +30,10 @@ defined('MOODLE_INTERNAL') || die();
          'fileconverter_unowebconv/pathtounoconvws',
          get_string('pathtounoconvws', 'fileconverter_unowebconv'),
          get_string('pathtounoconvws_help', 'fileconverter_unowebconv'),
-         'https://example-webservice.com'
+         'https://unowebconv.example.com'
      )
  );
 
 $url = new moodle_url('/files/converter/unowebconv/testunowebconv.php');
 $link = html_writer::link($url, get_string('test_unoconvws', 'fileconverter_unowebconv'));
 $settings->add(new admin_setting_heading('test_unoconvws', '', $link));
- 
-
-
-
-    
-

@@ -25,7 +25,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 function xmldb_fileconverter_unowebconv_install() {
-    
     $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
     // Unowebconv is configured correctly, enable it.
     $plugins['unowebconv']->set_enabled(true);
