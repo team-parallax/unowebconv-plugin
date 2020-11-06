@@ -25,14 +25,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Unowebconv setting.
- $settings->add(
-     new admin_setting_configtext(
-         'fileconverter_unowebconv/pathtounoconvws',
-         get_string('pathtounoconvws', 'fileconverter_unowebconv'),
-         get_string('pathtounoconvws_help', 'fileconverter_unowebconv'),
-         'https://example-webservice.com'
-     )
- );
+$unowebconv_url_setting = new admin_setting_configtext(
+    'fileconverter_unowebconv/pathtounoconvws',
+    get_string('pathtounoconvws', 'fileconverter_unowebconv'),
+    get_string('pathtounoconvws_help', 'fileconverter_unowebconv'),
+    'https://example-webservice.com'
+);
+$unowebconv_url_setting->set_updatedcallback('xmldb_fileconverter_unowebconv_install');
+$settings->add(
+    $unowebconv_url_setting
+);
 
 $url = new moodle_url('/files/converter/unowebconv/testunowebconv.php');
 $link = html_writer::link($url, get_string('test_unoconvws', 'fileconverter_unowebconv'));

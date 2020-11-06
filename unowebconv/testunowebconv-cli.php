@@ -24,7 +24,7 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/filelib.php');
 
-use fileconverter_unowebconv\converter;
+use \fileconverter_unowebconv\converter;
 
 $testArr = array(
     'data' =>
@@ -63,4 +63,13 @@ $conversion->validate();
 $converter = new converter();
 
 //$response = $converter->start_document_conversion($conversion);
-$response = $converter->poll_conversion_status($conversion);
+// $response = $converter->poll_conversion_status($conversion);
+
+// $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
+// var_dump(isset($plugins['unowebconv']));
+// $enabled_plugins = \core_plugin_manager::instance()->get_enabled_plugins('fileconverter');
+// var_dump(isset($enabled_plugins['unowebconv']));
+// $plugins['unowebconv']->set_enabled();
+
+$enabled_plugins = \core_plugin_manager::instance()->get_enabled_plugins('fileconverter');
+var_dump($enabled_plugins);
