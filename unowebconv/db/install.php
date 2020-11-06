@@ -24,20 +24,4 @@ use \fileconverter_unowebconv;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_fileconverter_unowebconv_install() {
-    \fileconverter_unowebconv\converter::log("Installing DB for unowebconv");
-    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
-    if (array_key_exists('unowebconv', $plugins)) {
-        \fileconverter_unowebconv\converter::log("Enable unowebconv");
-        $plugins['unowebconv']->set_enabled();
-    }
-    if (array_key_exists('unoconv', $plugins)) {
-        $enabled_plugins = \core_plugin_manager::instance()->get_enabled_plugins('fileconverter');
-        \fileconverter_unowebconv\converter::log($enabled_plugins);
-        if (array_key_exists('unoconv', $enabled_plugins)) {
-            \fileconverter_unowebconv\converter::log("Disable unoconv");
-            $plugins['unoconv']->set_enabled(false);
-        }
-    }
-    /
-}
+function xmldb_fileconverter_unowebconv_install() {}

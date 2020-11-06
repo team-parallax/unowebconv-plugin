@@ -24,6 +24,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$enableUnoWebConv = function () {
+    \fileconverter_unowebconv\converter::log("Installing DB for unowebconv");
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
+    if (array_key_exists('unowebconv', $plugins)) {
+        \fileconverter_unowebconv\converter::log("Enable unowebconv");
+        $plugins['unowebconv']->set_enabled(true);
+    }
+    if (array_key_exists('unoconv', $plugins)) {
+        $enabled_plugins = \core_plugin_manager::instance()->get_enabled_plugins('fileconverter');
+        \fileconverter_unowebconv\converter::log($enabled_plugins);
+        if (array_key_exists('unoconv', $enabled_plugins)) {
+            \fileconverter_unowebconv\converter::log("Disable unoconv");
+            $plugins['unoconv']->set_enabled(false);
+        }
+    }
+};
+
 // Unowebconv setting.
 $unowebconv_url_setting = new admin_setting_configtext(
     'fileconverter_unowebconv/pathtounoconvws',
@@ -31,7 +48,7 @@ $unowebconv_url_setting = new admin_setting_configtext(
     get_string('pathtounoconvws_help', 'fileconverter_unowebconv'),
     'https://example-webservice.com'
 );
-$unowebconv_url_setting->set_updatedcallback('xmldb_fileconverter_unowebconv_install');
+$unowebconv_url_setting->set_updatedcallback($enableUnoWebConv);
 $settings->add(
     $unowebconv_url_setting
 );
@@ -39,9 +56,3 @@ $settings->add(
 $url = new moodle_url('/files/converter/unowebconv/testunowebconv.php');
 $link = html_writer::link($url, get_string('test_unoconvws', 'fileconverter_unowebconv'));
 $settings->add(new admin_setting_heading('test_unoconvws', '', $link));
- 
-
-
-
-    
-
