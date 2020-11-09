@@ -337,7 +337,11 @@ class converter implements \core_files\converter_interface {
      * @return string
      */
     private static function get_unoconv_webservice_url() {
-        return get_config('fileconverter_unowebconv', 'pathtounoconvws');
+        $unowebconv_url = get_config('fileconverter_unowebconv', 'pathtounoconvws');
+        if (substr($unowebconv_url, -1) !== '/') {
+            $unowebconv_url .= '/';
+        }
+        return $unowebconv_url;
     }
 
     static function log($msg) {
