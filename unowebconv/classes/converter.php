@@ -323,9 +323,11 @@ class converter implements \core_files\converter_interface {
 
     private function fetch_unoconv_supported_conversions() {
         $base_url = self::get_unoconv_webservice_url();
+        self::log($base_url);
         $cache = cache::make('fileconverter_unowebconv', 'formats');
         if(!$cache->get('formats')) {
             $response_object = curl_handler::fetch_url_data($base_url . 'formats');
+            self::log($response_object);
             $cache->set('formats', $response_object->document);
         }
         return $cache->get('formats');
