@@ -346,7 +346,7 @@ class converter implements \core_files\converter_interface {
         return $unowebconv_url;
     }
 
-    private static function log($msg) {
+    static function log($msg) {
         $log = gmdate('H:i:s', time()) . ":  " . var_export($msg,true);
         file_put_contents("/tmp/log.txt", $log.PHP_EOL, FILE_APPEND | LOCK_EX);
     }

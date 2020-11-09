@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
-
+use \fileconverter_unowebconv;
 /**
  * Installation for unowebconv.
  *
@@ -24,12 +24,4 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_fileconverter_unowebconv_install() {
-    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
-    // Unowebconv is configured correctly, enable it.
-    $plugins['unowebconv']->set_enabled(true);
-    // If unoconv plugin is available disable it.
-    if ($plugins['unoconv']) {
-        $plugins['unoconv']->set_enabled(false);
-    }
-}
+function xmldb_fileconverter_unowebconv_install() {}
