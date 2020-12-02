@@ -7,7 +7,8 @@ This Repository contains the code for the `unowebconv` plugin, an alternative to
 1. [How to use](#how-to-use)
 2. [Adjustments](#adjustments)
 3. [Compatibility](#compatibility)
-4. [Changes](#Changes)
+4. [Troubleshooting](#troubleshooting)
+5. [Changes](#Changes)
 
 ## How to use
 
@@ -45,7 +46,7 @@ In case the language packs were installed by downloading the corresponding pack 
 
 ## Compatibility
 
-The current version of this [plugin](https://github.com/team-parallax/unowebconv-plugin) (v1.0.1) works with version `0.4.2` of the unoconv-webservice (more information on versions below).
+The current version of this [plugin](https://github.com/team-parallax/unowebconv-plugin) (v1.0.2) works with version `0.4.2` of the unoconv-webservice (more information on versions below).
 
 All versions currently mentioned in this document specify versions of the plugin itself or versions of the [team-parallax/unoconv-webservice](https://github.com/team-parallax/unoconv-webservice) (referred to as unoconv-webservice)
 
@@ -54,6 +55,22 @@ All versions currently mentioned in this document specify versions of the plugin
 | --- | --- |
 | 1.0.0 | 0.4.2 |
 | 1.0.1 | 0.4.2 |
+| 1.0.2 | 0.4.2 |
+
+## Troubleshooting
+
+In case the plugin is not working properly verify the following things:
+
+1. You correctly [installed](#how-to-use) the plugin
+2. Review your webservice url
+
+### Moodle settings overview
+
+The image below shows the settings of Moodles document converters admin settings, with correctly installed and configured Plugins.
+
+![Moodle: document converter settings](resources/document-converter-settings-correct-path.png)
+
+If the column __Supported document conversions__ is empty after the installation, verify that the provided webservice url is correct and the service is running.
 
 ## Changes
 
@@ -62,3 +79,5 @@ Changes in different versions:
 __1.0.0__: release candidate
 
 __1.0.1__: updated labels for settings page, automatic disabling of unoconv
+
+__1.0.2__: enable plugin after installation without checking webservice url

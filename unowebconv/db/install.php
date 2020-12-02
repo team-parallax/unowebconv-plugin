@@ -24,4 +24,11 @@ use \fileconverter_unowebconv;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_fileconverter_unowebconv_install() {}
+function xmldb_fileconverter_unowebconv_install() {
+    \fileconverter_unowebconv\converter::log("Installing DB for unowebconv");
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
+    if (array_key_exists('unowebconv', $plugins)) {
+        \fileconverter_unowebconv\converter::log("Enable unowebconv");
+        $plugins['unowebconv']->set_enabled(true);
+    }
+}
