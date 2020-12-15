@@ -43,17 +43,19 @@ $PAGE->set_title($strheading);
 
 $converter = new converter();
 
-$response = converter::test_unoconv_path();
+$response = $converter::test_unoconv_path();
+$converter::log($response);
 $path = get_config('fileconverter_unowebconv', 'pathtounoconvws');
-$msg = $OUTPUT->get_string('pluginname', 'fileconverter_unowebconv') . 'path: ' . $path;
+$msg = $OUTPUT->get_string('pluginname', 'fileconverter_unowebconv');
 if ($response->status === converter::UNOCONVWSPATH_OK) {
     $unoresponse = $OUTPUT->notification(get_string('test_unoconvwsok', 'fileconverter_unowebconv'), 'success');
 }
-else {
-    $unoresponse = $OUTPUT->notification($response, 'warning');
+else if ($response->status === converter::UNOCONVWSPATH_ERROR) {
+    $unoresponse = $OUTPUT->notification(get_string('test_unoconvwsdoesnotexist', 'fileconverter_unowebconv'), 'error');
 }
 
 $returl = new moodle_url('/admin/settings.php', array('section' => 'fileconverterunowebconv'));
+$msg .= $unoresponse;
 $msg .= $OUTPUT->continue_button($returl);
 echo $OUTPUT->header();
 echo $OUTPUT->box($unoresponse, 'generalbox');

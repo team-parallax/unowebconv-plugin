@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $enableUnoWebConv = function () {
-    \fileconverter_unowebconv\converter::log("Installing DB for unowebconv");
     $plugins = \core_plugin_manager::instance()->get_plugins_of_type('fileconverter');
     if (array_key_exists('unowebconv', $plugins)) {
         \fileconverter_unowebconv\converter::log("Enable unowebconv");
