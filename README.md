@@ -56,6 +56,7 @@ All versions currently mentioned in this document specify versions of the plugin
 | 1.0.0 | 0.4.2 |
 | 1.0.1 | 0.4.2 |
 | 1.0.2 | 0.4.2 |
+| 1.1.0 | 0.5.2 |
 
 ## Troubleshooting
 
@@ -66,11 +67,30 @@ In case the plugin is not working properly verify the following things:
 
 ### Moodle settings overview
 
+The `Unowebconv` settings:
+
+![Moodle: unowebconv settings](resources/moodle-url-setting.png)
+
+To set a (new) url for the `unoconv-webservice` enter a valid url into the text field, then save it.
+
+To test if everything works as expected click on 'Test unoconv webservice url'.
+
+You will see:
+
+![Moodle: valid url setting](resources/moodle-correct-url-feedback.png)
+
+if the url you entered points to an instance of the `unoconv-webservice`.
+In case of an error you will be displayed the following
+
+![Moodle: incorrect webservice url](resources/moodle-error-url-feedback.png)
+
 The image below shows the settings of Moodles document converters admin settings, with correctly installed and configured Plugins.
 
 ![Moodle: document converter settings](resources/document-converter-settings-correct-path.png)
 
 If the column __Supported document conversions__ is empty after the installation, verify that the provided webservice url is correct and the service is running.
+
+
 
 ## Changes
 
@@ -81,3 +101,6 @@ __1.0.0__: release candidate
 __1.0.1__: updated labels for settings page, automatic disabling of unoconv
 
 __1.0.2__: enable plugin after installation without checking webservice url
+
+__1.1.0__: updates documentation for settings.
+Adds better feedback for webservice url setting.
