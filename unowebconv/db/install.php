@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
-use \fileconverter_unowebconv;
 /**
  * Installation for unowebconv.
  *

@@ -265,16 +265,16 @@ class converter implements \core_files\converter_interface {
             $ret->message = self::UNOCONVWSPATH_EMPTY_MSG;
             return $ret;
         }
-        $ping_response = curl_handler::get_http_response_code($unoconvwspath . "formats/");
-        if ($ping_response !== 200) {
-            if ($ping_response === 400 || $ping_response === 404) {
-                $ret->status = self::UNOCONVWSPATH_NOT_FOUND_ERROR;
-                $ret->message = self::UNOCONVWSPATH_NOT_FOUND_ERROR_MSG;
-                return $ret;
-            }
-            // $ret->status = self::UNOCONVWSPATH_ERROR;
-            // $ret->message = self::UNOCONVWSPATH_ERROR_MSG;
+        self::log("requesting " . $unoconvwspath . "ping");
+        $ping_response = str_replace("\"", "", curl_handler::fetch_url_data($unoconvwspath . "ping", true));
+        self::log("Request returned: " . $ping_response);
+        if (strcmp($ping_response, "pong") == 0) {
+            self::log("Received 'pong' signal from webservice");
+            return $ret;
         }
+        self::log("Error: No 'pong' received.");
+        $ret->status = self::UNOCONVWSPATH_ERROR;
+        $ret->message = self::UNOCONVWSPATH_ERROR_MSG;
         return $ret;
     }
 

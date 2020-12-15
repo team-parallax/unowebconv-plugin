@@ -11,7 +11,7 @@ namespace fileconverter_unowebconv;
 
 class curl_handler
 {
-    public static function fetch_url_data($url)
+    public static function fetch_url_data($url, $raw = false)
     {
         if (!$url || !is_string($url)) {
             return false;
@@ -30,6 +30,9 @@ class curl_handler
         }
         curl_close($ch);
         $result = utf8_encode($response);
+        if ($raw) {
+            return $result;
+        }
         return json_decode($result);
     }
 
