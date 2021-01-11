@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['cachedef_formats'] = 'Stores the formats that can be converted by unowebconv';
 $string['pathtounoconvws'] = 'Url to unoconv document converter webservice';
 $string['pathtounoconvws_help'] = 'Url to unoconv document converter webservice. This is a webservice that is capable of converting between document formats supported by LibreOffice. This is used to support a wider range of input files for the assignment annotate PDF feature.';
 $string['pluginname'] = 'Unowebconv';

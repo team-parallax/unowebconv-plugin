@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['cachedef_formats'] = 'Speichert die Formate die von Unowebconv konvertiert können im Cache';
 $string['pathtounoconvws'] = 'Url für den Unoconv-Webservice';
 $string['pathtounoconvws_help'] = 'Url für den Unoconv-Webservice. Dieser Webservice kann Dokumente zwischen Dokumentformaten, die von LibreOffice unterstützt werden, konvertieren. Dadurch können mehrere verschiedene Formate für das Annotate PDF Feature akzeptiert werden.';
 $string['pluginname'] = 'Unowebconv';
