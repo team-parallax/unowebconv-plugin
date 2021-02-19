@@ -229,8 +229,10 @@ class converter implements \core_files\converter_interface {
                 return \core_files\conversion::STATUS_PENDING;
             case 'processing':
                 return \core_files\conversion::STATUS_IN_PROGRESS;
-            default:
+            case 'failed':
                 return \core_files\conversion::STATUS_FAILED;
+            default:
+                return \core_files\conversion::STATUS_PENDING;
         }
     }
 

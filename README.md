@@ -50,13 +50,13 @@ The current version of this [plugin](https://github.com/team-parallax/unowebconv
 
 All versions currently mentioned in this document specify versions of the plugin itself or versions of the [team-parallax/unoconv-webservice](https://github.com/team-parallax/unoconv-webservice) (referred to as unoconv-webservice)
 
-
 | Plugin | Webservice |
 | --- | --- |
 | 1.0.0 | 0.4.2 |
 | 1.0.1 | 0.4.2 |
 | 1.0.2 | 0.4.2 |
-| 1.1.0 | 0.5.2 |
+| 1.1.0 | 0.5.2 - 1.0.0 |
+| 1.2.0 | 1.2.0_rc and newer |
 
 ## Troubleshooting
 
