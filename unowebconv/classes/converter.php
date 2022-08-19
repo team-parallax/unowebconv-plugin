@@ -118,20 +118,20 @@ class converter implements \core_files\converter_interface {
             );
             throw $fe;
         }
-
-        $byte_array = array_values(unpack('C*', $file->get_content()));
-
         $unoconvwspath = self::get_unoconv_webservice_url();
-        $arr = [
-            "file" => [
-                "type" => "Buffer",
-                "data" => $byte_array
-            ],
-            "filename" => $file->get_filename(),
+        self::log("before curlification");
+        $conversionfile = new \CURLFile($filename);
+        self::log("after curlification");
+        self::log($conversionfile);
+        $req_body = [
+            "conversionFile" => $conversionfile,
             "originalFormat" => $fromformat,
             "targetFormat" => $format
         ];
-        $response = curl_handler::post_conversion($unoconvwspath . "conversion", $arr);
+        self::log("after request body prep");
+        $response = curl_handler::post_conversion($unoconvwspath . "conversion/v2", $req_body);
+        self::log("received response from webservice: ");
+        self::log($response);
         if(isset($response->status) && isset($response->name) && isset($response->message) && $response->status !== 200) {
             error_log( $response->name . ": " .  $response->message);
             return $this;
@@ -144,7 +144,6 @@ class converter implements \core_files\converter_interface {
         self::log('$conversionId: ' . $conversionId);
         $conversion
             ->set('status', conversion::STATUS_IN_PROGRESS)
-            /* @TODO */
             ->set('statusmessage', "In Progress")
             ->set('data', $conversionId)
             ->update();
@@ -173,6 +172,9 @@ class converter implements \core_files\converter_interface {
             // The temporary file to copy into.
             $file = $conversion->get_sourcefile();
             $format = $conversion->get('targetformat');
+            $file = $conversion->get_sourcefile();
+            $filepath = $file->get_filepath();
+            $fromformat = pathinfo($file->get_filename(), PATHINFO_EXTENSION);
             $localfilename = $file->get_id() . '.' . $format;
             $newtmpfile = $uniqdir . '/' . $localfilename;
 
@@ -196,7 +198,7 @@ class converter implements \core_files\converter_interface {
                 error_log(
                     "Unoconv conversion for '" . $filepath . "' from '" . $fromformat . "' to '" . $format . "' " .
                     "was unsuccessful; the output file size has 0 bytes in '" . $newtmpfile . "'. Please check the " .
-                    "conversion file content / format with the command: [ " . $cmd . " ]"
+                    "conversion file content / format"
                 );
                 return $this;
             }
